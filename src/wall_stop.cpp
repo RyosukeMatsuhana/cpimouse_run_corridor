@@ -23,8 +23,8 @@ void callback(const raspimouse_ros_2::LightSensorValues::ConstPtr& msg)
 void onSigint(int sig)
 {
 	std_srvs::Trigger trigger;
-	ros::service::call("/motor_off", trigger);
-	ros::shutdown();
+	service::call("/motor_off", trigger);
+	shutdown();
 }
 
 void run(Publisher *pub)
@@ -41,19 +41,19 @@ void run(Publisher *pub)
 
 int main(int argc, char **argv)
 {
-	ros::init(argc,argv,"wall_stop");
-	ros::NodeHandle n("~");
+	init(argc,argv,"wall_stop");
+	NodeHandle n("~");
 	
-	ros::Publisher pub = n.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
-	ros::Subscriber sub = n.subscribe("/lightsensors", 1, callback);
+	Publisher pub = n.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
+	Subscriber sub = n.subscribe("/lightsensors", 1, callback);
 
-	ros::service::waitForService("/motor_on");
-	ros::service::waitForService("/motor_off");
+	service::waitForService("/motor_on");
+	service::waitForService("/motor_off");
 
-	ros::signal(SIGINT, onSigint);
+	signal(SIGINT, onSigint);
 
 	std_srvs::Trigger trigger;
-	ros::service::call("/motor_on", trigger);
+	service::call("/motor_on", trigger);
 
 	int freq = 10;
 
@@ -61,10 +61,11 @@ int main(int argc, char **argv)
 	raspimouse_ros_2::LightSensorValues msg;
 
 	unsigned int c = 0;
-	while(ros::ok()){
+	while(ok()){
 		run(&pub);
-		ros::spinOnce();
+		spinOnce();
 		loop_rate.sleep();
 	}
 	exit(0);
 }
+
